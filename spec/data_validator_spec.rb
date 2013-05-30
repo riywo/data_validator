@@ -49,6 +49,14 @@ describe DataValidator::Validator do
         obj.errors[:name].should be_eql 'dummy error'
       end
     end
+    context 'unnecessary key' do
+      let(:obj) { DataValidator::Validator.new({name: 'dummy', foo: 'dummy'}, {name: {dummy: true}}) }
+      it { obj.valid?.should be_false }
+      it do
+        obj.valid?
+        obj.errors[:foo].should be_eql ['is unnecessary key']
+      end
+    end
 
   end
 end

@@ -15,7 +15,9 @@ module DataValidator
     end
 
     def valid?
+      unchecked_keys = Hash[@params.each { |k,v| [k, true] }]
       @rules.each_pair do |key, rule|
+        unchecked_keys.delete(key)
         is_allow_nil   = rule.delete :allow_nil
         is_allow_blank = rule.delete :allow_blank
         next if @params[key].nil? && is_allow_nil
@@ -29,6 +31,10 @@ module DataValidator
           validation.check_validity!
           validation.validate
         end
+      end
+
+      unchecked_keys.each do |name,v|
+        errors[name] = ["#{I18n.t("datavalidator.errors.messages.unnecessary", {})}"]
       end
 
       if error?
